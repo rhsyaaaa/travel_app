@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/routing/app_route.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,8 +13,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+   bool intro = false;
+   String login = "";
+   cekData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+    if (prefs.getBool('isIntro') != null) {
+        intro = prefs.getBool('isIntro')!;
+        if (prefs.getString('login') != null) {
+          login = prefs.getString('login')!;
+        }
+    }
+    });
+}
     void initState() {
-    Future.delayed(Duration(seconds: 3), () => context.goNamed(Routes.Intro));
+      cekData();
+    Future.delayed(Duration(seconds: 3), () => !intro ? context.goNamed(Routes.Intro) : login == "" ? context.goNamed(Routes.login) : context.goNamed(Routes.home));
     super.initState();
   }
 

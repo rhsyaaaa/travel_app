@@ -4,6 +4,8 @@ part of 'app_route.dart';
 
 class Routes {
   static const String home = '/';
+  static const String detail = '/detail';
+  static const String search = '/search';
   static const String splash = '/splash';
   static const String Intro = "/intro";
   static const String login = "/login";

@@ -7,6 +7,7 @@ import 'package:flutter_application_1/core/routing/app_route.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class prossesAuth {
   var url = dotenv.env['baseUrl'];
@@ -91,6 +92,8 @@ class prossesAuth {
     }));
     print(response.statusCode);
     if (response.statusCode == 200) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('login', response.body);
       print('berhasil');
       return context.goNamed(Routes.home);
     } else {

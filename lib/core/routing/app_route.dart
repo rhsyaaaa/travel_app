@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unused_import
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/presentation/page/detail.dart';
 import 'package:flutter_application_1/presentation/page/forgot_password.dart';
 import 'package:flutter_application_1/presentation/page/home.dart';
 import 'package:flutter_application_1/presentation/page/introduction.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_application_1/presentation/page/notif_forgotPassword.dar
 import 'package:flutter_application_1/presentation/page/notif_success.dart';
 import 'package:flutter_application_1/presentation/page/otp_verifikasi.dart';
 import 'package:flutter_application_1/presentation/page/register.dart';
+import 'package:flutter_application_1/presentation/page/search.dart';
 import 'package:flutter_application_1/presentation/page/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -21,6 +23,16 @@ final appRoute = GoRouter(routes: [
     path: '/Home',
     name: Routes.home,
     builder: (context, state) =>  HomeScreen(),
+  ),
+  GoRoute(
+    path: '/detail',
+    name: Routes.detail,
+    builder: (context, state) =>  detailScreen(),
+  ),
+  GoRoute(
+    path: '/search',
+    name: Routes.search,
+    builder: (context, state) =>  SearchScreen(),
   ),
   GoRoute(
     path: '/',
