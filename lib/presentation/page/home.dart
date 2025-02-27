@@ -1,12 +1,15 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_super_parameters
+// ignore_for_file: unused_import, prefer_const_constructors, prefer_const_literals_to_create_immutables, use_super_parameters, avoid_print
 
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/models/model.dart';
-import 'package:flutter_application_1/core/useCase/home.dart';
-import 'package:flutter_application_1/presentation/page/widget/popular.dart';
-import 'package:flutter_application_1/presentation/page/widget/wisata.dart';
+import 'package:flutter_application_1/core/routing/app_route.dart';
+import 'package:flutter_application_1/core/useCase/homeController.dart';
+import 'package:flutter_application_1/presentation/widget/popular.dart';
+import 'package:flutter_application_1/presentation/widget/wisata.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Login? dataUser;
   List<Categories> dataCategory = [];
+  List<DetailWisata> favorit = [];
+  List<DetailWisata> popular = [];
 
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -26,9 +31,19 @@ class _HomeScreenState extends State<HomeScreen> {
       dataUser = loginFromJson(prefs.getString('login')!);
     });
 
-    HomeController().getCategories().then((value) => setState(() {
+    Homecontroller().getCategory().then(
+          (value) => setState(() {
+            if (value != null) {
+              dataCategory = value;
+            }
+          }),
+        );
+
+    Homecontroller().getWisata().then((value) => setState(() {
+          print(value);
           if (value != null) {
-            dataCategory = value;
+            favorit = value[0]["favorit"];
+            popular = value[0]["popular"];
           }
         }));
   }
@@ -64,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         Text(
-                          "Hi ${dataUser?.data.name} ",
+                          "HI ${dataUser?.data.name} ",
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -109,10 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 10),
             Row(
                 children: List.generate(
-              dataCategory.length,
-              (index) => categoryContainer(
-                  dataCategory[index].name, dataCategory[index].image),
-            )),
+                    dataCategory.length,
+                    (index) => categoryContainer(
+                        dataCategory[index].name, dataCategory[index].image))),
             SizedBox(height: 20),
             Text(
               "Favorite Place",
@@ -123,20 +137,19 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               child: SizedBox(
                 child: Wrap(
-                  spacing: 10,
-                  children: [
-                    Wisata("assets/page1.jpg", "Tempat Wisata",
-                        "Jonggol, Indonesia", "4.8", tinggi, lebar, context),
-                    Wisata("assets/page1.jpg", "Tempat Wisata",
-                        "Jonggol, Indonesia", "4.8", tinggi, lebar, context),
-                    Wisata("assets/page1.jpg", "Tempat Wisata",
-                        "Jonggol, Indonesia", "4.8", tinggi, lebar, context),
-                    Wisata("assets/page1.jpg", "Tempat Wisata",
-                        "Jonggol, Indonesia", "4.8", tinggi, lebar, context),
-                    Wisata("assets/page1.jpg", "Tempat Wisata",
-                        "Jonggol, Indonesia", "4.8", tinggi, lebar, context),
-                  ],
-                ),
+                    spacing: 10,
+                    children: List.generate(
+                      favorit.length,
+                      (index) => Wisata(
+                          favorit[index].gambarwisata,
+                          favorit[index].namawisata,
+                          favorit[index].lokasiwisata,
+                          favorit[index].ratingWisata.toString(),
+                          tinggi,
+                          lebar,
+                          context,
+                          false),
+                    )),
               ),
             ),
             SizedBox(height: 20),
@@ -164,32 +177,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: [
-                    Popular(
-                        "assets/page1.jpg",
-                        "Tempat Wisata",
-                        "500000",
-                        4.8,
-                        "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
-                        lebar,
-                        tinggi),
-                    Popular(
-                        "assets/page2.jpg",
-                        "Tempat Wisata",
-                        "300000",
-                        4.8,
-                        "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
-                        lebar,
-                        tinggi),
-                    Popular(
-                        "assets/page3.jpg",
-                        "Tempat Wisata",
-                        "800000",
-                        4.8,
-                        "Lorem ipsum dolor sit amet consectetur adipisicing elit...",
-                        lebar,
-                        tinggi),
-                  ],
+                  children: List.generate(
+                    popular.length,
+                    (index) => InkWell(
+                        onTap: () => context.goNamed(Routes.detail,
+                            extra: popular[index]),
+                        child: Popular(
+                            popular[index].gambarwisata,
+                            popular[index].namawisata,
+                            popular[index].hargaWisata.toString(),
+                            popular[index].ratingWisata,
+                            popular[index].deskripsi.substring(0, 123),
+                            lebar,
+                            tinggi)),
+                  ),
                 ),
               ),
             )
@@ -218,3 +219,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
