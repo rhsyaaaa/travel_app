@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 class Homecontroller {
   Future getCategory() async {
     var url = dotenv.env['baseUrl'];
-    Uri urlCategories = Uri.parse("http://172.10.50.12:3000/categories");
+    Uri urlCategories = Uri.parse("http://192.168.187.62:3000/categories");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     Login user = loginFromJson(prefs.getString("login")!);
     print("User: ${user.token}");
@@ -36,7 +36,7 @@ class Homecontroller {
   }
 
   Future getWisata() async {
-  Uri urlWisata = Uri.parse("http://172.10.50.12:3000/wisata");
+  Uri urlWisata = Uri.parse("http://192.168.187.62:3000/wisata");
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   Login user = loginFromJson(prefs.getString("login")!);
   print("User: ${user.token}");
@@ -61,4 +61,6 @@ class Homecontroller {
     throw Exception("Failed to load wisata: $e");
   }
 }
+
+
 }

@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_constructors, unused_import
+// ignore_for_file: prefer_const_constructors, unused_import, no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/core/models/model.dart';
 import 'package:flutter_application_1/presentation/page/detail.dart';
 import 'package:flutter_application_1/presentation/page/forgot_password.dart';
 import 'package:flutter_application_1/presentation/page/home.dart';
@@ -27,12 +28,20 @@ final appRoute = GoRouter(routes: [
   GoRoute(
     path: '/detail',
     name: Routes.detail,
-    builder: (context, state) =>  detailScreen(),
+    builder: (context, state) {
+      final _data = state.extra as DetailWisata;
+      return DetailScreen(data: _data);
+    },
   ),
   GoRoute(
     path: '/search',
     name: Routes.search,
-    builder: (context, state) =>  SearchScreen(),
+    builder: (context, state) {
+      final extra = state.extra as Map<String, dynamic>? ?? {};
+      final String searchQuery = extra['searchQuery'] as String? ?? "";
+      final int categoryID = extra['categoryID'] as int? ?? 0;
+      return SearchScreen(categoryID: categoryID, searchQuery: searchQuery);
+    },
   ),
   GoRoute(
     path: '/',

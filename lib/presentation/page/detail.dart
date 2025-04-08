@@ -1,268 +1,167 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, camel_case_types
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, camel_case_types, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/core/models/model.dart';
+import 'package:flutter_application_1/presentation/widget/galery.dart';
+import 'package:flutter_application_1/presentation/widget/judul.dart';
+import 'package:flutter_application_1/presentation/widget/kategory.dart';
+import 'package:flutter_application_1/presentation/widget/riview.dart';
+import 'package:flutter_application_1/presentation/widget/wisata.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class detailScreen extends StatefulWidget {
-  const detailScreen({super.key});
+class DetailScreen extends StatefulWidget {
+  final DetailWisata data;
+
+  const DetailScreen({super.key, required this.data});
 
   @override
-  State<detailScreen> createState() => _detailScreenState();
+  State<DetailScreen> createState() => _DetailScreenState();
 }
 
-class _detailScreenState extends State<detailScreen> {
+class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Detail(),
-    );
-  }
-}
-
-class Detail extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+    var tinggi = MediaQuery.of(context).size.height;
+    var lebar = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
-          title: Text("Kuta Beach"),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          title: Text('Detail Wisata'),
+          centerTitle: true,
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.favorite_outline))
+            IconButton(
+              icon: Icon(Icons.favorite),
+              onPressed: () {
+                // Add filter action here
+                
+              },
+            ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.asset(
-                      "assets/page3.jpg",
-                      fit: BoxFit.cover,
-                    ),
+        body: Container(
+          padding: EdgeInsets.all(20),
+          child: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Wisata(
+                    widget.data.gambarwisata,
+                    widget.data.namawisata,
+                    widget.data.lokasiwisata,
+                    widget.data.ratingWisata.toString(),
+                    tinggi,
+                    lebar,
+                    context,
+                    true),
+                Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: Judul("What's Included?", "", tinggi)),
+                Container(
+                    margin: EdgeInsets.only(bottom: tinggi * 0.03),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Wrap(spacing: 20, children: [
+                        Category("Flight", "assets/page1.jpg", lebar),
+                        Category("Hotel", "assets/page1.jpg", lebar),
+                        Category(
+                            "Transportation", "assets/page1.jpg", lebar),
+                        Category("Eat", "assets/page1.jpg", lebar),
+                      ]),
+                    )),
+                Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: Judul("About Trip", "", tinggi)),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Text(
+                    widget.data.deskripsi,
+                    style: TextStyle(fontSize: 16),
                   ),
-                  Positioned(
-                      bottom: 16,
-                      left: 16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Kuta Beach",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, color: Colors.white),
-                              SizedBox(width: 4),
-                              Text(
-                                "Bali, Indonesia",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "100 + people have explored",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.yellow, size: 18),
-                              Icon(Icons.star, color: Colors.yellow, size: 18),
-                              Icon(Icons.star, color: Colors.yellow, size: 18),
-                              Icon(Icons.star, color: Colors.yellow, size: 18),
-                              Icon(Icons.star_half,
-                                  color: Colors.yellow, size: 18),
-                              SizedBox(width: 4),
-                              Text(
-                                "4.5",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ))
-                ],
-              ),
-              SizedBox(height: 20),
-              Text("What's Included?",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Chip(
-                    avatar: Icon(
-                      Icons.flight_takeoff,
-                      size: 20,
-                      color: Colors.yellow,
-                    ),
-                    label: Text("Flight"),
-                  ),
-                  SizedBox(width: 8),
-                  Chip(
-                    avatar: Icon(Icons.hotel, size: 20, color: Colors.yellow),
-                    label: Text("Hotel"),
-                  ),
-                  SizedBox(width: 8),
-                  Chip(
-                    avatar: Icon(Icons.directions_car,
-                        size: 20, color: Colors.yellow),
-                    label: Text("Transport"),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text("About Trip",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text(
-                  "Pantai Kuta punya vibes santai dengan pasir putih dan ombak yang pas untuk berselancar. Suasana ramai dengan wisatawan, pedagang, dan musik pantai. Sunset di sini indah, sering jadi spot foto favorit. Malamnya, area sekitar hidup dengan kafe dan hiburan. Pantai Kuta punya vibes santai dengan pasir putih dan ombak yang pas untuk berselancar. Suasana ramai dengan wisatawan, pedagang, dan musik pantai. Sunset di sini indah, sering jadi spot foto favorit. Malamnya, area sekitar hidup dengan kafe dan hiburan. Pantai Kuta punya vibes santai dengan pasir putih dan ombak yang pas untuk berselancar. Suasana ramai dengan wisatawan, pedagang, dan musik pantai. Sunset di sini indah, sering jadi spot foto favorit. Malamnya, area sekitar hidup dengan kafe dan hiburan. Pantai Kuta punya vibes santai dengan pasir putih dan ombak yang pas untuk berselancar. Suasana ramai dengan wisatawan, pedagang, dan musik pantai. Sunset di sini indah, sering jadi spot foto favorit. Malamnya, area sekitar hidup dengan kafe dan hiburan."),
-              SizedBox(height: 24),
-              Text("Gallery Photo",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(40),
-                      child: Image.asset(
-                        'assets/page3.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(40),
-                      child: Image.asset(
-                        'assets/page3.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Stack(
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Judul("Gallery Photo", "", tinggi),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  height: 150,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(40),
-                          child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.5),
-                                BlendMode.darken),
-                            child: Image.asset(
-                              'assets/page3.jpg',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Center(
-                            child: Center(
-                          child: Text(
-                            "20+",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )),
+                        BuildGalleryPhoto("assets/page1.jpg"),
+                        BuildGalleryPhoto("assets/page2.jpg"),
+                        BuildGalleryPhoto("assets/page3.jpg"),
                       ],
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text("Location",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                  image: DecorationImage(
-                    image: AssetImage('assets/map_kuta.png'),
-                    fit: BoxFit.cover,
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Judul("Review (99)", "", tinggi, angka: 4.8),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Column(
+                    children: [
+                      ReviewTile(
+                        name: "Alice Brown",
+                        rating: 5.0,
+                        review: "Amazing place! Had a great time.",
+                        time: "2 hours ago",
+                      ),
+                      ReviewTile(
+                        name: "Charlie Davis",
+                        rating: 4.5,
+                        review: "Beautiful scenery and friendly staff.",
+                        time: "1 day ago",
+                      ),
+                      // Add more ReviewTile widgets as needed
+                    ],
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              Text("Reviews (99)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ListTile(
-                leading: CircleAvatar(),
-                title: Text("Yelena Belova"),
-                subtitle: Text(
-                    "Pretty nice place aojdsoajsd asodjaoksd joaso a osjdoasjd ojas"),
-              ),
-              SizedBox(height: 16),
-              ListTile(
-                leading: CircleAvatar(),
-                title: Text("Yelena Belova"),
-                subtitle: Text(
-                    "Pretty nice place aksdajsdklaj lkjskl jdklaj dksla kads"),
-              ),
-              SizedBox(height: 16),
-              ListTile(
-                leading: CircleAvatar(),
-                title: Text("Yelena Belova"),
-                subtitle: Text(
-                    "Pretty nice place askldj alksdjka lsdlkasd lka sdasd"),
-              ),
-              SizedBox(height: 16),
-            ],
-          ),
+              ])),
         ),
-        bottomNavigationBar: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "\$745.00",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 300,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    minimumSize: Size(400, 60),
-                  ),
-                  child: Text("Booking Now",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold)),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '\$750.00 / Person',
+                  style: GoogleFonts.poppins(
+                      textStyle:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ],
+                Container(
+                  width: lebar * 0.4,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.yellow,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    onPressed: () {
+                      // Add booking action here
+                    },
+                    child: Text(
+                      'Booking',
+                      style: GoogleFonts.poppins(
+                          textStyle: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ));
   }
