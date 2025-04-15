@@ -1,5 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors, unused_import
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/models/model.dart';
 import 'package:flutter_application_1/core/routing/app_route.dart';
@@ -14,6 +12,7 @@ class SearchScreen extends StatefulWidget {
   final String? searchQuery;
 
   const SearchScreen({
+    super.key,
     required this.categoryID,
     this.searchQuery,
   });
@@ -25,16 +24,29 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
   List<DetailWisata> filtered = [];
+  List<Categories> dataCategory = [];
+  int selectedCategoryID = 0; // Menyimpan kategori yang dipilih
   int selectedRating = 0;
   RangeValues selectedPriceRange = RangeValues(100, 1000000);
 
   @override
   void initState() {
     super.initState();
+    selectedCategoryID = widget.categoryID;
+    getCategories();
     filteredData();
   }
 
-  // Filter data berdasarkan kategori dan query pencarian
+  // Mendapatkan data kategori dari backend
+  void getCategories() async {
+    final controller = Homecontroller();
+    var categories = await controller.getCategory();
+    setState(() {
+      dataCategory = categories;
+    });
+  }
+
+  // Filter data berdasarkan kategori, query pencarian, rating, dan harga
   void filteredData({String? searchQuery}) async {
     final controller = Homecontroller();
     var rawData = await controller.getWisata();
@@ -53,49 +65,37 @@ class _SearchScreenState extends State<SearchScreen> {
 
     String query = searchQuery ?? widget.searchQuery ?? "";
 
+    // Filter berdasarkan query pencarian
     if (query.isNotEmpty) {
       isi = data
           .where((item) =>
               item.namawisata.toLowerCase().contains(query.toLowerCase()))
           .toList();
-    } else if (widget.categoryID != 0) {
-      isi = data.where((item) => item.idCategory == widget.categoryID).toList();
+    } else if (selectedCategoryID != 0) {
+      // Filter berdasarkan kategori
+      isi = data.where((item) => item.idCategory == selectedCategoryID).toList();
     } else {
       isi = data;
     }
 
-    popupFiltered(isi);
-  }
-
-  // Filter data berdasarkan rating dan harga
-  void popupFiltered(List<DetailWisata> allData) {
-    List<DetailWisata> rslt = List.from(allData);
-
-    // Filter rating
+    // Filter berdasarkan rating
     if (selectedRating > 0 && selectedRating <= 5) {
-      rslt = rslt
+      isi = isi
           .where((item) => item.ratingWisata.toInt() == selectedRating)
           .toList();
-      print("Filtered by rating: $selectedRating");
-    } else {
-      print("No rating filter applied.");
     }
 
-    // Filter harga
+    // Filter berdasarkan harga
     if (selectedPriceRange.start > 100 || selectedPriceRange.end < 1000000) {
-      rslt = rslt
+      isi = isi
           .where((item) =>
               item.hargaWisata >= selectedPriceRange.start &&
               item.hargaWisata <= selectedPriceRange.end)
           .toList();
-      print(
-          "Filtered by price range: ${selectedPriceRange.start} - ${selectedPriceRange.end}");
-    } else {
-      print("No price range filter applied.");
     }
 
     setState(() {
-      filtered = rslt;
+      filtered = isi;
     });
 
     if (filtered.isEmpty) {
@@ -169,12 +169,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Text("Clear All"),
                       ),
                       ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           setState(() {
                             selectedRating = tempRating;
                             selectedPriceRange = tempPriceRange;
                           });
-                          popupFiltered(filtered);
+                          filteredData();
                           Navigator.pop(context);
                         },
                         child: Text("Apply"),
@@ -194,6 +194,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     var tinggi = MediaQuery.of(context).size.height;
     var lebar = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -223,6 +224,7 @@ class _SearchScreenState extends State<SearchScreen> {
               Container(
                 margin: EdgeInsets.only(bottom: tinggi * 0.03),
                 child: TextField(
+                  controller: searchController,
                   decoration: InputDecoration(
                     hintText: "Search destination",
                     suffixIcon: Icon(Icons.search),
@@ -234,7 +236,36 @@ class _SearchScreenState extends State<SearchScreen> {
                   onChanged: (value) => filteredData(searchQuery: value),
                 ),
               ),
+
+              // Categories
+              Text(
+                "Choose Category",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: List.generate(
+                  dataCategory.length,
+                  (index) => InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedCategoryID = dataCategory[index].id;
+                        filteredData(); // Filter ulang data berdasarkan kategori
+                      });
+                    },
+                    child: categoryContainer(
+                      dataCategory[index].name,
+                      dataCategory[index].image,
+                      selectedCategoryID == dataCategory[index].id,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
               Judul("Data dari kategori yang dipilih", "", tinggi),
+
+              // Results
               Container(
                 margin: EdgeInsets.only(bottom: tinggi * 0.03),
                 child: filtered.isEmpty
@@ -266,6 +297,35 @@ class _SearchScreenState extends State<SearchScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget categoryContainer(String title, String img, bool isSelected) {
+    return Container(
+      margin: EdgeInsets.only(right: 10),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        color: Colors.grey[200], // Warna tetap tanpa perubahan
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Image.network(
+            img,
+            width: 30,
+            height: 30,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(width: 5),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black, // Warna teks tetap hitam
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

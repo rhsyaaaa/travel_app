@@ -1,25 +1,35 @@
 
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Widget Wisata(String img, String name, String place, String rating, tinggi,
-    lebar, context, bool bool, ) {
+Widget Wisata(
+  String img,
+  String name,
+  String place,
+  String rating,
+  tinggi,
+  lebar,
+  context,
+  bool isukuran,
+) {
+  double width = isukuran ? tinggi : lebar * 0.45;
   return InkWell(
     onTap: () {},
     child: Stack(
       children: [
         Container(
           height: tinggi * 0.35,
-          width: lebar * 0.45 ,
+          width: width,
           decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(img), fit: BoxFit.cover),
+              image:
+                  DecorationImage(image: NetworkImage(img), fit: BoxFit.cover),
               borderRadius: BorderRadius.circular(20)),
         ),
         Container(
           height: tinggi * 0.35,
-          width: lebar * 0.45,
+          width: width,
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   colors: [Colors.transparent, Colors.black26],
